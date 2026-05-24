@@ -222,6 +222,7 @@ __marimo__/
 **/__pycache__/
 *.pyc
 
-# Ignor test reports 
+# Ignor test reports
 report.html
-.pytest_cache/
+
+.idea/
