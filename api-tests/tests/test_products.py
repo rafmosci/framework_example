@@ -1,5 +1,6 @@
 import pytest
 import requests
+import responses
 
 from jsonschema import validate
 from schemas.products_scheme import PRODUCT_SCHEMA
@@ -9,7 +10,7 @@ from schemas.products_scheme import PRODUCT_SCHEMA
 # =====================================================================
 
 class TestGetProducts:
-    """All tests for the GET/products method (happy paths)"""
+    """All tests for the GET /products method"""
 
     @pytest.fixture(scope="class", autouse=True)
     def shared_response(self, base_url):
@@ -53,7 +54,56 @@ class TestGetProducts:
 # =====================================================================
 # 2. POST METHOD (Placeholder)
 # =====================================================================
-# I added this section to show how I would organize tests in framework
+
+class TestPostCreateProduct:
+    """All tests for the POST /products/add method"""
+
+    @pytest.fixture(scope="class")
+    def new_product_payload(self):
+        """Fixture providing a valid product payload for the POST request"""
+        return {
+            "title": "BMW Pencil",
+            "price": 12.99,
+            "description": "A luxury pencil inspired by German engineering.",
+            "category": "stationery"
+        }
+
+    @responses.activate
+    def test_05_create_product(self, base_url, new_product_payload):
+        # Step 1 - Send POST request to add a new product
+        responses.add_passthru(f"{base_url}/products/add")
+        response = requests.post(f"{base_url}/products/add", json=new_product_payload, timeout=5)
+
+        # Step 2 - Check if server respond with correct status
+        assert response.status_code == 201, f"Status Code should be 201, but currently it is {response.status_code}"
+
+        # Step 3 - Check if response is a dictionary and has generated an ID
+        created_product = response.json()
+        assert isinstance(created_product, dict), f"Expected product to be a dictionary, but got {type(created_product)}"
+        assert "id" in created_product, "The server did not return a new product id!"
+        created_id = created_product.get("id") #saved created product id for future
+
+        # Step 4 - Check if values in created product are the same as provided (also confirm if fields are not empty)
+        sent_fields_in_response = {key: created_product[key] for key in new_product_payload}
+        assert sent_fields_in_response == new_product_payload, f"Data integrity violation! Expected: {new_product_payload}, but server saved: {sent_fields_in_response}"
+
+        # Step 5 - Create mock to simulate that products was added to database
+        mocked_database_record = {**new_product_payload, "id": created_id}
+        responses.add(
+            method=responses.GET,
+            url=f"{base_url}/products/{created_id}",
+            json=mocked_database_record,
+            status=200
+        )
+
+        # Step 6 - Get product data generate through mock
+        product_data = requests.get(f"{base_url}/products/{created_id}", timeout=5)
+        get_response_payload = product_data.json()
+
+        # Step 7 - Compare if date from GET method is same as in POST method
+        sent_fields_in_get = {key: get_response_payload[key] for key in new_product_payload}
+        assert get_response_payload.get("id") == created_id, f"Id of the product should be equal to '{created_id}', but currently it is {get_response_payload.get('id')}"
+        assert sent_fields_in_get == new_product_payload, f"Data in GET method are not the same as provided during product creation"
 
 # =====================================================================
 # 3. ERROR HANDLING (NEGATIVE TESTS)

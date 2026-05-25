@@ -23,5 +23,7 @@ def pytest_runtest_makereport(item, call):
             if name in item.funcargs:
                 res = item.funcargs[name]
                 if hasattr(res, 'status_code'):
+                    print(f"Test failed! Response details:")
                     print(f"\n[DEBUG] URL: {res.url} | Status: {res.status_code}")
+                    print(f"\n-> Response Body: {res.text}")
                     break
