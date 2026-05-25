@@ -69,7 +69,7 @@ class TestPostCreateProduct:
         }
 
     @responses.activate
-    def test_05_create_product(self, base_url, new_product_payload):
+    def test_03_create_product(self, base_url, new_product_payload):
         # Step 1 - Send POST request to add a new product
         responses.add_passthru(f"{base_url}/products/add")
         response = requests.post(f"{base_url}/products/add", json=new_product_payload, timeout=5)
@@ -128,7 +128,7 @@ class TestProductsErrorHandling:
             "float-id"
         ]
     )
-    def test_03_get_product_with_invalid_id(self, base_url, invalid_id, expected_statuses):
+    def test_04_get_product_with_invalid_id(self, base_url, invalid_id, expected_statuses):
         # Step 1 - GET product using invalid ID
         response = requests.get(f"{base_url}/products/{invalid_id}", timeout=5)
 
@@ -164,7 +164,7 @@ class TestProductsBoundaryCases:
             "limit-standard"
         ]
     )
-    def test_04_check_get_products_pagination_limits(self, base_url, limit, expected_counts):
+    def test_05_check_get_products_pagination_limits(self, base_url, limit, expected_counts):
         # Step 1 - GET products using limit parameter
         response = requests.get(f"{base_url}/products/?limit={limit}", timeout=5)
         assert response.status_code == 200, f"Expected 200 OK for limit={limit}, but current status is equal to: {response.status_code}"
