@@ -52,7 +52,7 @@ class TestGetProducts:
         validate(instance=first_product, schema=PRODUCT_SCHEMA)
 
 # =====================================================================
-# 2. POST METHOD (Placeholder)
+# 2. POST METHOD
 # =====================================================================
 
 class TestPostCreateProduct:
