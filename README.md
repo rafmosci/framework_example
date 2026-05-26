@@ -80,6 +80,6 @@ playwright install
 ```
 3. Execute the tests:
 ```
-# Run all API tests
+# Run all Frontend tests
 python -m pytest tests -env "demo"
 ```
