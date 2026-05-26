@@ -56,10 +56,10 @@ pip install -r requirements.txt
 3. Execute the tests:
 ```
 # Run all API tests
-pytest tests
+python -m pytest tests
 
 # Run tests and generate an HTML report
-pytest tests --html=raport.html --self-contained-html
+python -m pytest tests --html=raport.html --self-contained-html
 ```
 
 ### Running UI Tests
