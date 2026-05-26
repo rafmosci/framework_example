@@ -81,5 +81,5 @@ playwright install
 3. Execute the tests:
 ```
 # Run all API tests
-pytest tests
+python -m pytest tests -env "demo"
 ```
