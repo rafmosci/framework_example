@@ -2,6 +2,7 @@ import pytest
 
 from playwright.sync_api import sync_playwright
 from config.environment_data import urls
+from faker import Faker
 
 def pytest_addoption(parser):
     """Add mandatory parameter needed to be provided through command line"""
@@ -39,3 +40,17 @@ def setup_shop(browser_page, get_environment):
     base_url=get_base_url(get_environment)
     browser_page.goto(base_url, timeout=15000)
     return browser_page
+
+# I added this function after our call and discussion about generating test data before test run :)
+@pytest.fixture(scope="function")
+def random_customer_data():
+    fake = Faker('es_ES')
+    return {
+        "first_name": fake.first_name(),
+        "last_name": fake.last_name(),
+        "email": fake.unique.email(),
+        "address": f"{fake.street_name()} {fake.building_number()}",
+        "postcode": fake.postcode(),
+        "city": fake.city(),
+        "identification_number": fake.numerify(text="##########"),
+    }

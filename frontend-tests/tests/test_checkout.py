@@ -12,7 +12,7 @@ from pages.order_page import OrderPage
 class TestE2ECheckout:
     """End-to-End test for the PrestaShop demo store purchase pipeline"""
 
-    def test_01_verify_buy_product_functionality(self, setup_shop):
+    def test_01_verify_buy_product_functionality(self, setup_shop, random_customer_data):
         # Step 1 - Load shop page and check if url is correct
         page = setup_shop
         expect(page).to_have_url("https://www.blmodules.com/demoshop/en/")
@@ -44,10 +44,10 @@ class TestE2ECheckout:
         # Step 5 - Fill personal details order form
         order_page = OrderPage(page)
         order_page.go_to_order()
-        order_page.fill_personal_data_form_data("Mr.", "John", "Test", "j.test@testmail.com")
+        order_page.fill_personal_data_form_data("Mr.", random_customer_data["first_name"], random_customer_data["last_name"], random_customer_data["email"])
 
         # Step 6 -Fill address order data
-        order_page.fill_address_data_form_data("Test address", "12345", "Barcelona","987654321")
+        order_page.fill_address_data_form_data(random_customer_data["address"], random_customer_data["postcode"], random_customer_data["city"], random_customer_data["identification_number"])
         order_page.click_continue_button()
 
         # Step 7 - Check if price in order is same as price in order
